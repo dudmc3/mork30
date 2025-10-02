@@ -25,8 +25,23 @@ pulls data reported to CDEC for San Andreas Lake, water year 2023-2024.
 
 For other examples, please see `examples.sh` and please understand these are merely illustrative
 reservoirs which illustrate the featurs of Mork30, using unverified data from a public server.
+If your organization sends data to CDEC, try plotting one of your own reservoirs.
 
-[List of stations on CDEC](https://cdec.water.ca.gov/dynamicapp/staSearch?sta=&sensor_chk=on&sensor=15&collect=NONE+SPECIFIED&dur_chk=on&dur=D&active=&lon1=&lon2=&lat1=&lat2=&elev1=-5&elev2=99000&nearby=&basin=NONE+SPECIFIED&hydro=NONE+SPECIFIED&county=NONE+SPECIFIED&agency_num=0&display=sta)
+On these plots:
+* The horizontal axis is time, one water year in these examples
+* The vertical axis is water contents stored in the reservoir, units of acre-feet, at midnight each day of the year
+* The gray trace is a plot of the contents
+* The gray trace is covered up by a dark green trace for much of the year; explained ahead
+* Along the bottom is a table of monthly totals, values are volumes of water in acre-feet
+* There is a vertical dark line on October 1, representing the start of the collection season
+
+The green trace is really a series of lines, each one day long. The algortithm uses daily-interval data.
+Green traces represent days when water was initially collected into storage, or, when such water was released.
+Green traces also represent days when refill water was collected into storage and held there for at least 30 days,
+or, when refill water was being released from storage which had been there for at least 30 days.
+There‘s no green trace when refill water was held in the reservoir for less than 30 days.
+
+Consult this [List of stations on CDEC](https://cdec.water.ca.gov/dynamicapp/staSearch?sta=&sensor_chk=on&sensor=15&collect=NONE+SPECIFIED&dur_chk=on&dur=D&active=&lon1=&lon2=&lat1=&lat2=&elev1=-5&elev2=99000&nearby=&basin=NONE+SPECIFIED&hydro=NONE+SPECIFIED&county=NONE+SPECIFIED&agency_num=0&display=sta)
 
 The script can be configured to write a monthly summary of water volumes collected and withdrawn, as well as
 water volumes held over in regulatory storage. (Those terms are explained ahead). The script can also
@@ -43,16 +58,16 @@ Adding water to storage is called _collection_.
 (By _natural_ water we mean water in the environment, from a stream or rainfall.
 Water which you or another person did not already take from the environment.)
 
-If you store water, usually you'll need to track how much, in acre-feet, and when.
-You'll need to report the volume of diversion to storage, as well as when you withdraw it
+If you store water, usually you‘ll need to track how much, in acre-feet, and when.
+You‘ll need to report the volume of diversion to storage, as well as when you withdraw it
 from storage later to put it to an authorized beneficial use.
 You cannot store directly-diverted water, because by definition, directly diverted water
 must be placed to a beneficial use right away.
-Instead, you've _diverted to storage_ that natural water.
+Instead, you‘ve _diverted to storage_ that natural water.
 
 Some collection to storage might be rediversion of _controlled water_.
 So, not all collection is diversion to storage.
-(We threw in another term there, _controlled_ water: that's water which you previously diverted
+(We threw in another term there, _controlled_ water: that‘s water which you previously diverted
 and then sent downhill, probably to be _rediverted_ and then used elsewhere.)
 
 ### Refill
@@ -63,15 +78,17 @@ water during the wetter season and then collect additional water, known as refil
 If you have a large system, some of that water might be withdrawal of controlled water from another authorized
 storage reservoir uphill.
 
-You don't need to refill your reservoir completely for this to be labeled "refill."
+You don‘t need to refill your reservoir completely for this to be labeled "refill."
 
-This special provision applies to this refill water, whether it's new diversion to storage or
+This special provision applies to this refill water, whether it‘s new diversion to storage or
 re-diversion to storage.
 If your reservoir gains refill contents and you subsequently release that water a few days later,
-it doesn't count as collection.
+it doesn‘t count as collection.
 
 The regulations define "a few days later" as 30 days. Water brought into your reservoir and then
-released within 30 days is called _regulation of water_, not collection. If it's new water from nature, that counts as direct diversion. Otherwise, if that is controlled water diverted somewhere upstream it's re-diversion.
+released within 30 days is called _regulation of water_, not collection. If it‘s new water from nature, that counts as direct diversion.
+Yes, direct diversion. Otherwise, if that is controlled water diverted somewhere upstream it‘s re-diversion.
+That‘s re-diversion of water which you already reported as diversion to storage somewhere upstream.
 
 Here is an excerpt from Title 23, California Code of Regulations, Section 657.  This involves storage or regulatatory determination for water reservoirs filled in whole or in part more than once during a single water year.
 
@@ -82,6 +99,8 @@ Here is an excerpt from Title 23, California Code of Regulations, Section 657.  
 > days shall be considered regulation of water
 
 ### Definitions
+(The authors don‘t work for the Water Board and so you should consult the regulations for the full and official defnintion. The
+information here is our interpretation, offered here in hopes that it is helpful.)
 
 *Collection* of water means adding it to a storage reservoir, and if it is refill, holding it for at least 30 days. This includes re-storage of controlled water.
 
@@ -92,7 +111,7 @@ Here is an excerpt from Title 23, California Code of Regulations, Section 657.  
 *Withdrawal* is taking water out of storage. It might be then immediately placed to use, or perhaps
 you send it downstream to a Point of Re-Diversion where it is either re-stored or beneficially used.
 We suggest you engage a licensed civil engineer to help you determine how to report this in CalWATRS if
-your system is complex. Don't report the same water twice!
+your system is complex. Don‘t report the same water twice!
 
 *Regulation of water* happens when you refill (partially or completely) a storage reservoir after withdrawing water from it, then release that same portion within 30 days. Refill, not initial filling. Your initial
 fill water counts as collection, not regulation.
@@ -107,13 +126,17 @@ emptied. Consider for example a small reservoir in between a larger reservoir an
 water intake; that small reservoir fluctuates day-by-day, not following an annual pattern; it
 just regulates the outflow from above. In those cases, any collection to storage would be refill.
 
+**To handle all-refill reservoirs** you can set a flag in the algorithm; it will then disregard
+the initial collection to storage and consider all collection as refill.
+This makes sense for regulating reservoirs, such as between two cascaded hydropower plants.
+
 ## Reminders!
 If you have several reservoirs or several points of diversion along a stream, not all of the water
 you collect in storage comes from nature. Some might have been diverted already, and reported
 already at that upstream point of diversion.
-It's important to distinguish water diverted to storage from water collected in storage.
+It‘s important to distinguish water diverted to storage from water collected in storage.
 Some of that water collected could be controlled water, reported under another point of diversion.
-Don't count that water twice!
+Don‘t count that water twice!
 
 When we say water is put to use, we mean a beneficial use, and, one that is specifically authorized on your water right permit or license! You cannot use water for uses not authorized. (But if you do for whatever reason, be sure to report it on your CalWATRS report. Ask your attorney to provide a written explanation and attach that.)
 
